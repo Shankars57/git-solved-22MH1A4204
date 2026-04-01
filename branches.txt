@@ -1,14 +1,14 @@
-  conflict-simulator                     d3dd9b2 [instructor/conflict-simulator] updating conflict-simulator
-  feature/another-feature                90eff43 docs: Add FAQ section
-  feature/cherry-pick-demo               d9db1b2 docs: add deployment runbook
-  feature/new-feature                    cf33d84 feat: Add new feature
-  feature/rebase-demo                    1b59d08 docs: expand rebase demo notes
-* main                                   59ffd63 [origin/main: ahead 4] fix: unify environment-aware conflict resolution
-  remotes/instructor/HEAD                -> instructor/main
-  remotes/instructor/conflict-simulator  d3dd9b2 updating conflict-simulator
-  remotes/instructor/dev                 02011a5 updating dev
-  remotes/instructor/main                0312c6f updating main
-  remotes/origin/HEAD                    -> origin/main
-  remotes/origin/feature/another-feature 9099ea6 feat: Add test feature
-  remotes/origin/feature/new-feature     cf33d84 feat: Add new feature
-  remotes/origin/main                    e1e7e2c docs: Add final project artifacts
+  conflict-simulator
+  feature/another-feature
+  feature/cherry-pick-demo
+  feature/new-feature
+  feature/rebase-demo
+* main
+  remotes/instructor/HEAD -> instructor/main
+  remotes/instructor/conflict-simulator
+  remotes/instructor/dev
+  remotes/instructor/main
+  remotes/origin/HEAD -> origin/main
+  remotes/origin/feature/another-feature
+  remotes/origin/feature/new-feature
+  remotes/origin/main

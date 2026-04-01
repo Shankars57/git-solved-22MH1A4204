@@ -1,6 +1,8 @@
-* 1b59d08 (feature/rebase-demo) docs: expand rebase demo notes
-* c4a601a docs: add rebase demo notes
-* 59ffd63 (HEAD -> main, tag: v2.0.0-beta) fix: unify environment-aware conflict resolution
+* bfe5194 (HEAD -> main) docs: refresh Git journey and repository artifacts
+| * 1b59d08 (feature/rebase-demo) docs: expand rebase demo notes
+| * c4a601a docs: add rebase demo notes
+|/  
+* 59ffd63 (tag: v2.0.0-beta) fix: unify environment-aware conflict resolution
 * 616da46 Revert "docs: add temporary rollback note"
 * 4a58636 docs: add temporary rollback note
 * 1ce33b4 docs: add deployment runbook
