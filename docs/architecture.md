@@ -1,41 +1,44 @@
-# System Architecture - Experimental Build
+# System Architecture
 
 ## Overview
-DevOps Simulator follows an **event-driven microservices architecture** with AI/ML integration, designed for multi-cloud deployments and chaos engineering.
+DevOps Simulator uses a shared microservices foundation with environment-specific behavior for production, development, and experimental workflows. The final merge keeps the stable production path, preserves development tooling, and gates experimental capabilities behind a dedicated profile instead of making them the default.
 
-**⚠️ EXPERIMENTAL**: This architecture includes untested cutting-edge features.
+## Core Architecture
 
-## Core Components
+### 1. Application Layer
+- Technology: Node.js + Express
+- Shared responsibility: API handling, configuration loading, health endpoints
+- Runtime profiles:
+  - Production runs on port 8080 with SSL and rolling updates.
+  - Development runs on port 3000 with hot reload and debugger support.
+  - Experimental runs on port 9000 with optional AI and multi-port telemetry.
 
-### 1. Application Server (AI-Enhanced)
-- **Technology**: Node.js + Express + TensorFlow.js
-- **Port**: 9000 (main), 9001 (metrics), 9002 (AI API)
-- **Scaling**: AI-powered predictive auto-scaling
-- **Intelligence**: Real-time ML inference
-- **Message Queue**: Apache Kafka for event streaming
+### 2. Database Layer
+- Production: PostgreSQL with replication and scheduled backups
+- Development: local PostgreSQL with relaxed security and seed data support
+- Experimental: distributed cluster with read replicas, geo-redundant backups, and AI-assisted optimization
 
-### 2. Distributed Database Layer
-- **Primary**: PostgreSQL 14 cluster (5 nodes)
-- **Cache**: Redis cluster with ML-based cache optimization
-- **Configuration**: Multi-master replication
-- **Backup**: Continuous backup with geo-redundancy
-- **AI Features**: Query optimization, index suggestions
+### 3. Monitoring and Observability
+- Baseline metrics: CPU, memory, disk, and application health
+- Development additions: verbose logs, debug snapshots, faster polling
+- Experimental additions: predictive alerts, anomaly checks, and multi-cloud status reporting
 
-### 3. AI/ML Pipeline
-- **Framework**: TensorFlow, PyTorch, Scikit-learn
-- **Models**: 
-  - Anomaly detection (LSTM neural network)
-  - Load prediction (XGBoost)
-  - Auto-scaling optimizer (Reinforcement Learning)
-- **Training**: Continuous online learning
-- **Inference**: Real-time predictions (<50ms latency)
+### 4. Deployment Strategy
+- Production: rolling update workflow for stable releases
+- Development: docker-compose oriented workflow for local iteration
+- Experimental: canary rollout with optional AI analysis and chaos testing
 
-### 4. Multi-Cloud Orchestration
-- **Supported Clouds**: AWS, Azure, GCP, DigitalOcean
-- **Orchestrator**: Kubernetes with custom CRDs
-- **Load Balancing**: Global anycast with GeoDNS
-- **Failover**: Automatic cross-cloud failover
+## Environment Merge Strategy
+The resolved repository intentionally combines all three branches:
 
-### 5. Advanced Monitoring & Observability
-- **Metrics**: Prometheus + Thanos (long-term storage)
-- **Logs**: ELK Stack + AI log analysis
+- `main` remains the stable default and preserves operational production values.
+- `dev` contributes local developer experience features such as hot reload, debug logging, mock APIs, and Docker Compose deployment.
+- `conflict-simulator` contributes advanced capabilities, but only under the `experimental` profile so those features do not override stable defaults.
+
+## Security Model
+- Production keeps SSL and stronger database transport requirements.
+- Development explicitly documents lower-friction local settings.
+- Experimental adds zero-trust and audit logging concepts without forcing them on the standard runtime path.
+
+## Why This Resolution Is Safer
+This merged architecture avoids the earlier problem where experimental settings replaced the stable configuration. Instead, production remains the default profile, development stays practical for local work, and experimental behavior is available only when intentionally selected.

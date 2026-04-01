@@ -1,78 +1,143 @@
 #!/bin/bash
-# Experimental Deployment Script with AI
-# Version: 3.0.0-experimental
+# Unified deployment script for production, development, and experimental modes.
 
-set -euo pipefail
+set -eu
 
-echo "================================================"
-echo "DevOps Simulator - EXPERIMENTAL AI-POWERED DEPLOY"
-echo "================================================"
+DEPLOY_ENV="${DEPLOY_ENV:-production}"
+RUN_TESTS="${RUN_TESTS:-false}"
+ENABLE_AI_ANALYSIS="${ENABLE_AI_ANALYSIS:-false}"
+CHAOS_TESTING="${CHAOS_TESTING:-false}"
 
-# Configuration
-DEPLOY_ENV="experimental"
-DEPLOY_STRATEGY="canary"
-DEPLOY_CLOUDS=("aws" "azure" "gcp")
-AI_OPTIMIZATION=true
-CHAOS_TESTING=false
+print_header() {
+    echo "================================================"
+    echo "DevOps Simulator - Unified Deployment"
+    echo "================================================"
+}
 
-echo "Environment: $DEPLOY_ENV"
-echo "Strategy: $DEPLOY_STRATEGY"
-echo "Target Clouds: ${DEPLOY_CLOUDS[@]}"
-echo "AI Optimization: $AI_OPTIMIZATION"
+configure_environment() {
+    case "$DEPLOY_ENV" in
+        production)
+            DEPLOY_MODE="rolling-update"
+            APP_PORT=8080
+            ENABLE_DEBUG=false
+            ;;
+        development)
+            DEPLOY_MODE="docker-compose"
+            APP_PORT=3000
+            ENABLE_DEBUG=true
+            ;;
+        experimental)
+            DEPLOY_MODE="canary"
+            APP_PORT=9000
+            ENABLE_DEBUG=true
+            ENABLE_AI_ANALYSIS="${ENABLE_AI_ANALYSIS:-true}"
+            ;;
+        *)
+            echo "Error: Unsupported DEPLOY_ENV '$DEPLOY_ENV'"
+            exit 1
+            ;;
+    esac
+}
 
-# AI pre-deployment analysis
-if [ "$AI_OPTIMIZATION" = true ]; then
-    echo "🤖 Running AI pre-deployment analysis..."
-    python3 scripts/ai-analyzer.py --analyze-deployment
-    echo "✓ AI analysis complete"
-fi
+run_prechecks() {
+    echo "Running pre-deployment checks..."
 
-# Pre-deployment checks
-echo "Running advanced pre-deployment checks..."
-if [ ! -f "config/app-config.yaml" ]; then
-    echo "Error: Configuration file not found!"
-    exit 1
-fi
+    if [ ! -f "config/app-config.yaml" ]; then
+        echo "Error: Configuration file not found!"
+        exit 1
+    fi
 
-# Validate multi-cloud configuration
-for cloud in "${DEPLOY_CLOUDS[@]}"; do
-    echo "Validating $cloud configuration..."
-    # cloud-specific validation
-done
+    if [ ! -f "config/database-config.json" ]; then
+        echo "Error: Database configuration file not found!"
+        exit 1
+    fi
 
-# Deploy to multiple clouds
-echo "Starting multi-cloud deployment..."
-for cloud in "${DEPLOY_CLOUDS[@]}"; do
-    echo "Deploying to $cloud..."
-    # Deployment logic per cloud
-    echo "✓ $cloud deployment initiated"
-done
+    if [ "$RUN_TESTS" = true ] && command -v npm >/dev/null 2>&1; then
+        echo "Running test suite..."
+        npm test
+    fi
+}
 
-# Canary deployment
-echo "Initiating canary deployment strategy..."
-echo "- 10% traffic to new version"
-echo "- Monitoring metrics..."
-sleep 2
-echo "- 50% traffic to new version"
-sleep 2
-echo "- 100% traffic to new version"
+run_ai_analysis() {
+    if [ "$ENABLE_AI_ANALYSIS" != true ]; then
+        return
+    fi
 
-# AI monitoring
-if [ "$AI_OPTIMIZATION" = true ]; then
-    echo "🤖 AI monitoring activated"
-    echo "- Anomaly detection: ACTIVE"
-    echo "- Auto-rollback: ENABLED"
-    echo "- Performance optimization: LEARNING"
-fi
+    if [ -f "scripts/ai-analyzer.py" ] && command -v python3 >/dev/null 2>&1; then
+        echo "Running AI pre-deployment analysis..."
+        python3 scripts/ai-analyzer.py --analyze-deployment
+    else
+        echo "AI analysis requested, but scripts/ai-analyzer.py is not available. Skipping."
+    fi
+}
 
-# Chaos engineering
-if [ "$CHAOS_TESTING" = true ]; then
-    echo "⚠️  Running chaos engineering tests..."
-    # Chaos monkey logic
-fi
+deploy_production() {
+    echo "Environment: production"
+    echo "Strategy: $DEPLOY_MODE"
+    echo "Port: $APP_PORT"
+    echo "Pulling latest container images..."
+    echo "Applying rolling update..."
+    echo "Production deployment completed."
+}
 
-echo "================================================"
-echo "Experimental deployment completed!"
-echo "AI Dashboard: https://ai.example.com"
-echo "Multi-Cloud Status: https://clouds.example.com"
-echo "================================================"
+deploy_development() {
+    echo "Environment: development"
+    echo "Mode: $DEPLOY_MODE"
+    echo "Port: $APP_PORT"
+    echo "Debug: $ENABLE_DEBUG"
+
+    if command -v docker-compose >/dev/null 2>&1; then
+        echo "Starting local services with docker-compose..."
+        docker-compose up -d
+    else
+        echo "docker-compose not found. Skipping container startup."
+    fi
+
+    echo "Development deployment completed."
+    echo "Hot reload and mock APIs remain enabled through config/app-config.yaml."
+}
+
+deploy_experimental() {
+    local clouds=("aws" "azure" "gcp")
+
+    echo "Environment: experimental"
+    echo "Strategy: $DEPLOY_MODE"
+    echo "Port: $APP_PORT"
+    echo "AI analysis: $ENABLE_AI_ANALYSIS"
+
+    run_ai_analysis
+
+    for cloud in "${clouds[@]}"; do
+        echo "Validating $cloud configuration..."
+    done
+
+    echo "Starting multi-cloud canary rollout..."
+    echo "- 10 percent traffic to new version"
+    echo "- Monitoring metrics and anomaly signals"
+    echo "- 50 percent traffic to new version"
+    echo "- 100 percent traffic to new version"
+
+    if [ "$CHAOS_TESTING" = true ]; then
+        echo "Chaos testing enabled for experimental rollout."
+    fi
+
+    echo "Experimental deployment completed."
+}
+
+print_header
+configure_environment
+run_prechecks
+
+case "$DEPLOY_ENV" in
+    production)
+        deploy_production
+        ;;
+    development)
+        deploy_development
+        ;;
+    experimental)
+        deploy_experimental
+        ;;
+esac
+
+echo "Deployment finished successfully."
